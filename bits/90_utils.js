@@ -33,6 +33,20 @@ function make_json_row(sheet/*:Worksheet*/, r/*:Range*/, R/*:number*/, cols/*:Ar
 				else if(raw && v === null) row[hdr[C]] = null;
 				else continue;
 			} else {
+				/**
+                 *	rr针对两行表头组合key值
+                 */
+				if(rr<=o.rr){
+                    v=v.replace(/\n/g,"");
+                    v=v.replace(/\s+/g,"");
+                    oldv=v;
+                    if(hdr[C].indexOf("_")!=-1){
+                        var index=hdr[C].indexOf("_");
+                        hdr[C]=hdr[C].substring(0,index)+v;
+                    }else{
+                        hdr[C]=hdr[C]+v;
+					}
+				}
 				row[hdr[C]] = raw || (o.rawNumbers && val.t == "n") ? v : format_cell(val,v,o);
 			}
 			if(v != null) isempty = false;
@@ -73,8 +87,14 @@ function sheet_to_json(sheet/*:Worksheet*/, opts/*:?Sheet2JSONOpts*/) {
 			case 2: hdr[C] = cols[C]; break;
 			case 3: hdr[C] = o.header[C - r.s.c]; break;
 			default:
-				if(val == null) val = {w: "__EMPTY", t: "s"};
+				/**
+				 * val(key)为空获取上一列的key作为值存放
+                 */
+				/*if(val == null) val = {w: "__EMPTY", t: "s"};*/
+				if(val == null) val = {w: vv, t: "s"};
 				vv = v = format_cell(val, null, o);
+                vv=vv.replace(/\n/g,"");
+                vv=vv.replace(/\s+/g,"");
 				counter = 0;
 				for(CC = 0; CC < hdr.length; ++CC) if(hdr[CC] == vv) vv = v + "_" + (++counter);
 				hdr[C] = vv;

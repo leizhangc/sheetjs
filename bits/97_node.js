@@ -92,6 +92,11 @@ if(has_buf && typeof require != 'undefined') (function() {
 				default:
 					if(val == null) val = {w: "__EMPTY", t: "s"};
 					vv = v = format_cell(val, null, o);
+					/**
+					去除换行和空格
+					**/
+					vv=vv.replace(/\n/g,"");
+                    vv=vv.replace(/\s+/g,"");
 					counter = 0;
 					for(CC = 0; CC < hdr.length; ++CC) if(hdr[CC] == vv) vv = v + "_" + (++counter);
 					hdr[C] = vv;
